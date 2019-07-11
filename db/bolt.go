@@ -107,7 +107,15 @@ func (store *BoltMediaStore) AddMedia(media Media, collection string) error {
 		if err != nil {
 			return err
 		}
-		return b.Put([]byte(media.ID), encoded)
+		err = b.Put([]byte(media.ID), encoded)
+		if err != nil {
+			return err
+		}
+		if media.Filename != "" {
+			secKeyBucket := tx.Bucket([]byte(SECKEY))
+			return secKeyBucket.Put([]byte(media.Filename), []byte(media.ID))
+		}
+		return nil
 	})
 	return err
 }
@@ -123,8 +131,11 @@ func (store *BoltMediaStore) UpdateMedia(media Media, collection string) error {
 		if err = b.Put([]byte(media.ID), encoded); err != nil {
 			return err
 		}
-		secKeyBucket := tx.Bucket([]byte(SECKEY))
-		return secKeyBucket.Put([]byte(media.Filename), []byte(media.ID))
+		if media.Filename != "" {
+			secKeyBucket := tx.Bucket([]byte(SECKEY))
+			return secKeyBucket.Put([]byte(media.Filename), []byte(media.ID))
+		}
+		return nil
 
 	})
 	return err

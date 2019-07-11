@@ -16,13 +16,13 @@ func RefreshWorker(limiter <-chan time.Time, users []string, store db.MediaStore
 			log.Printf("Refreshing for user %s\n", user)
 			medias, err := mediaProvider.UnseenMedias(user)
 			if err != nil {
-				log.Printf("Error retriving episodes for user %s : %s\n", user, err)
+				log.Printf("Error retriving medias for user %s : %s\n", user, err)
 			}
 			for _, media := range medias {
 				if media, _ := store.GetMedia(media.ID, db.FOUND); (media == db.Media{}) {
 					err := store.AddMedia(media, db.NOTFOUND)
 					if err != nil {
-						log.Printf("Error adding episodes to database: %s", err)
+						log.Printf("Error adding medias to database: %s", err)
 					}
 				}
 			}

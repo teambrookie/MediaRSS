@@ -19,7 +19,7 @@ func SearchWorker(mediaToSearch <-chan db.Media, store db.MediaStore, searchFunc
 		time.Sleep(apiRateLimit)
 		torrents, err := searchFunc(media)
 		if err != nil {
-			log.Printf("Error processing")
+			log.Printf("Error processing : %s", media.Name)
 		}
 		torrents = filter.FilterOutDeadTorrents(torrents)
 		torrents = filter.Filter(config.Categories, torrents)

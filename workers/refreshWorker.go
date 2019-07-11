@@ -20,7 +20,7 @@ func RefreshWorker(limiter <-chan time.Time, users []string, store db.MediaStore
 			}
 			for _, media := range medias {
 				if m, _ := store.GetMedia(media.ID, db.FOUND); (m == db.Media{}) {
-					err := store.AddMedia(media, db.NOTFOUND)
+					err := store.UpdateMedia(media, db.NOTFOUND)
 					if err != nil {
 						log.Printf("Error adding medias to database: %s", err)
 					}

@@ -25,7 +25,7 @@ type Media struct {
 }
 
 func (m Media) AddTorrentInfo(torrent torrentapi.TorrentResult) {
-	m.Filename = torrent.Filename
+	m.Filename = getFilename(torrent.Download)
 	m.Magnet = torrent.Download
 	m.TorrentURL = fmt.Sprintf("http://itorrents.org/torrent/%s.torrent", extractHashFromMagnet(torrent.Download))
 	m.LastUpdate = time.Now()

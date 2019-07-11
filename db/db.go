@@ -1,7 +1,12 @@
 package db
 
 import (
+	"fmt"
+	"regexp"
+	"strings"
 	"time"
+
+	"github.com/qopher/go-torrentapi"
 )
 
 //Media is a generic type
@@ -17,6 +22,27 @@ type Media struct {
 	LastUpdate   time.Time    `json:"last_update"`
 	LastAccess   time.Time    `json:"last_access"`
 	SearchParams SearchParams `json:"search_params"`
+}
+
+func (m Media) AddTorrentInfo(torrent torrentapi.TorrentResult) {
+	m.Filename = torrent.Filename
+	m.Magnet = torrent.Download
+	m.TorrentURL = fmt.Sprintf("http://itorrents.org/torrent/%s.torrent", extractHashFromMagnet(torrent.Download))
+	m.LastUpdate = time.Now()
+	m.LastAccess = time.Now()
+	m.Seeds = torrent.Seeders
+	m.Leechs = torrent.Leechers
+}
+
+func extractHashFromMagnet(magnet string) string {
+	r, _ := regexp.Compile("urn:btih:([^&]+)")
+	return strings.ToUpper(r.FindStringSubmatch(magnet)[1])
+}
+
+func getFilename(magnetLink string) string {
+	regex := "dn=([^&%]+)"
+	r, _ := regexp.Compile(regex)
+	return r.FindStringSubmatch(magnetLink)[1]
 }
 
 type SearchParams struct {
